@@ -25,7 +25,7 @@ public class ConfirmResetCodeUseCase {
 
         if (userAuthentication == null) {
             log.error("Incorrect email address : {}", email);
-            throw new EntityNotFoundException("User not found, please enter correct email address");
+            throw new EntityNotFoundException("User not found, Incorrect email address");
         }
 
         String passwordResetKey = userAuthentication.getPasswordResetKey();

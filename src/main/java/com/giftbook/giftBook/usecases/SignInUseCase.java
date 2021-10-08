@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 
 public class SignInUseCase {
     private static final Logger log = LoggerFactory.getLogger(SignInUseCase.class);
+
     private final UserAuthenticationRepository authRepository;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;

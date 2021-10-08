@@ -51,7 +51,7 @@ public class AuthenticationController {
         this.userRepository = userRepository;
     }
 
-    @PostMapping("signUp")
+    @PostMapping("sign-up")
     public ResponseEntity<?> register(@RequestBody SignUpRequest request) {
         try {
             SignUpUseCase useCase = new SignUpUseCase(
@@ -72,7 +72,7 @@ public class AuthenticationController {
         }
     }
 
-    @PostMapping("signIn")
+    @PostMapping("sign-in")
     public ResponseEntity<?> login(@RequestBody SignInRequest request) {
         try {
             SignInUseCase useCase = new SignInUseCase(
@@ -103,11 +103,11 @@ public class AuthenticationController {
             ApiResponse apiResponse = new ApiResponse(true, response);
             return ResponseEntity.ok(apiResponse);
         } catch (EntityNotFoundException e) {
-            log.error("Unable to send forgotPassword reset code: cause: {}", e.getMessage());
+            log.error("Unable to send forgotPassword reset code, cause: {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
             log.error("Unable to send forgotPassword reset code, cause : {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error, please try again");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "server error, please try again");
         }
     }
 
@@ -123,11 +123,11 @@ public class AuthenticationController {
             ApiResponse apiResponse = new ApiResponse(true, response);
             return ResponseEntity.ok(apiResponse);
         } catch (EntityNotFoundException | MismatchException e) {
-            log.error("Unable to confirm forgotPassword: cause: {}", e.getMessage());
+            log.error("Unable to confirm forgotPassword reset code, cause: {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
             log.error("Unable to confirm forgotPassword reset code, cause: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error, please try again");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "server error, please try again");
         }
     }
 
@@ -144,11 +144,11 @@ public class AuthenticationController {
             ApiResponse apiResponse = new ApiResponse(true, response);
             return ResponseEntity.ok(apiResponse);
         } catch (EntityNotFoundException e) {
-            log.error("Unable to change new password: cause: {}", e.getMessage());
+            log.error("Unable to change new password, cause: {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
             log.error("Unable to change new password, cause: {}", e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error, please try again");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "server error, please try again");
         }
     }
 }
