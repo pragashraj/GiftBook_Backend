@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class UpdateProfileUseCase {
-    private static final Logger log = LoggerFactory.getLogger(GetProfileDetailsUseCase.class);
+    private static final Logger log = LoggerFactory.getLogger(UpdateProfileUseCase.class);
 
     private final UserRepository userRepository;
     private final UserAuthenticationRepository authRepository;

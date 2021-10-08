@@ -2,13 +2,16 @@ package com.giftbook.giftBook.controllers;
 
 import com.giftbook.giftBook.auth.UserDetailsImpl;
 import com.giftbook.giftBook.exceptions.EntityNotFoundException;
+import com.giftbook.giftBook.exceptions.MismatchException;
 import com.giftbook.giftBook.repositories.PaymentCardRepository;
 import com.giftbook.giftBook.repositories.UserAuthenticationRepository;
 import com.giftbook.giftBook.repositories.UserRepository;
+import com.giftbook.giftBook.requests.ChangeNewPasswordRequest;
 import com.giftbook.giftBook.requests.UpdatePaymentCardRequest;
 import com.giftbook.giftBook.requests.UpdateProfileRequest;
 import com.giftbook.giftBook.responses.ApiResponse;
 import com.giftbook.giftBook.responses.GetProfileResponse;
+import com.giftbook.giftBook.usecases.ChangeNewPasswordUseCase;
 import com.giftbook.giftBook.usecases.GetProfileDetailsUseCase;
 import com.giftbook.giftBook.usecases.UpdateOrCreatePaymentCardUseCase;
 import com.giftbook.giftBook.usecases.UpdateProfileUseCase;
@@ -18,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -30,15 +34,18 @@ public class UserController {
     private final UserRepository userRepository;
     private final PaymentCardRepository paymentCardRepository;
     private final UserAuthenticationRepository authRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserController(UserRepository userRepository,
                           PaymentCardRepository paymentCardRepository,
-                          UserAuthenticationRepository authRepository
+                          UserAuthenticationRepository authRepository,
+                          PasswordEncoder passwordEncoder
     ) {
         this.userRepository = userRepository;
         this.paymentCardRepository = paymentCardRepository;
         this.authRepository = authRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("profile-details/{email}")
@@ -98,6 +105,22 @@ public class UserController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
             log.error("Unable to update or create payment card details, cause: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "server error, please try again");
+        }
+    }
+
+    @PostMapping("change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangeNewPasswordRequest request) {
+        try {
+            ChangeNewPasswordUseCase useCase = new ChangeNewPasswordUseCase(authRepository, request, passwordEncoder);
+            String response = useCase.execute();
+            ApiResponse apiResponse = new ApiResponse(true, response);
+            return ResponseEntity.ok(apiResponse);
+        } catch (EntityNotFoundException | MismatchException e) {
+            log.error("Unable to change new password, cause: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (Exception e) {
+            log.error("Unable to change new password, cause: {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "server error, please try again");
         }
     }

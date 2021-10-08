@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class UpdateOrCreatePaymentCardUseCase {
-    private static final Logger log = LoggerFactory.getLogger(GetProfileDetailsUseCase.class);
+    private static final Logger log = LoggerFactory.getLogger(UpdateOrCreatePaymentCardUseCase.class);
 
     private final UserRepository userRepository;
     private final PaymentCardRepository paymentCardRepository;
