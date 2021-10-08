@@ -10,4 +10,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MerchantRepository extends JpaRepository<Merchant, Long> {
     Page<Merchant> findMerchantsByMerchantCategory(MerchantCategory merchantCategory, Pageable pageable);
+
+    Page<Merchant> findAllByNameContaining(String name, Pageable pageable);
+
+    Merchant findByName(String name);
 }

@@ -4,6 +4,8 @@ import com.giftbook.giftBook.exceptions.EntityNotFoundException;
 import com.giftbook.giftBook.pageable.pageableEntities.PageableCoreMerchant;
 import com.giftbook.giftBook.repositories.MerchantCategoryRepository;
 import com.giftbook.giftBook.repositories.MerchantRepository;
+import com.giftbook.giftBook.usecases.GetMerchantByNameUseCase;
+import com.giftbook.giftBook.usecases.GetMerchantCategoriesUseCase;
 import com.giftbook.giftBook.usecases.GetMerchantsByCategoryUseCase;
 import com.giftbook.giftBook.usecases.GetMerchantsUseCase;
 import org.slf4j.Logger;
@@ -60,6 +62,33 @@ public class MerchantController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
             log.error("Unable to get merchants by category, cause: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "server error, please try again");
+        }
+    }
+
+    @GetMapping("getMerchantByName")
+    public ResponseEntity<?> getMerchantByName(@RequestParam String name, @RequestParam int page) {
+        try {
+            GetMerchantByNameUseCase useCase = new GetMerchantByNameUseCase(
+                    merchantRepository,
+                    name,
+                    page
+            );
+            PageableCoreMerchant pageableCoreMerchant = useCase.execute();
+            return ResponseEntity.ok(pageableCoreMerchant);
+        } catch (Exception e) {
+            log.error("Unable to get merchant by name, cause: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "server error, please try again");
+        }
+    }
+
+    @GetMapping("getMerchantCategories")
+    public ResponseEntity<?> getMerchantCategories() {
+        try {
+            GetMerchantCategoriesUseCase useCase = new GetMerchantCategoriesUseCase(merchantCategoryRepository);
+            return ResponseEntity.ok(useCase.execute());
+        } catch (Exception e) {
+            log.error("Unable to get merchant categories, cause: {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "server error, please try again");
         }
     }
