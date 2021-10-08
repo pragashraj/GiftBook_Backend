@@ -1,6 +1,7 @@
 package com.giftbook.giftBook.controllers;
 
 import com.giftbook.giftBook.exceptions.EntityNotFoundException;
+import com.giftbook.giftBook.exceptions.MismatchException;
 import com.giftbook.giftBook.exceptions.RegisterException;
 import com.giftbook.giftBook.exceptions.UserLoginException;
 import com.giftbook.giftBook.repositories.UserAuthenticationRepository;
@@ -9,8 +10,7 @@ import com.giftbook.giftBook.requests.SignInRequest;
 import com.giftbook.giftBook.requests.SignUpRequest;
 import com.giftbook.giftBook.responses.ApiResponse;
 import com.giftbook.giftBook.responses.AuthenticationResponse;
-import com.giftbook.giftBook.usecases.SignInUseCase;
-import com.giftbook.giftBook.usecases.SignUpUseCase;
+import com.giftbook.giftBook.usecases.*;
 import com.giftbook.giftBook.util.JwtUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,6 +89,66 @@ public class AuthenticationController {
         } catch (Exception e) {
             log.error("Unable to login, cause: {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "server error, please try again");
+        }
+    }
+
+    @PostMapping("send-reset-code/{email}")
+    public ResponseEntity<?> sendResetCode(@PathVariable String email) {
+        try {
+            SendPasswordResetCodeUseCase useCase = new SendPasswordResetCodeUseCase(
+                    authRepository,
+                    email
+            );
+            String response = useCase.execute();
+            ApiResponse apiResponse = new ApiResponse(true, response);
+            return ResponseEntity.ok(apiResponse);
+        } catch (EntityNotFoundException e) {
+            log.error("Unable to send forgotPassword reset code: cause: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (Exception e) {
+            log.error("Unable to send forgotPassword reset code, cause : {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error, please try again");
+        }
+    }
+
+    @PostMapping("confirm-reset-code")
+    public ResponseEntity<?> confirmResetCode(@RequestParam String email, @RequestParam String code) {
+        try {
+            ConfirmResetCodeUseCase useCase = new ConfirmResetCodeUseCase(
+                    authRepository,
+                    code,
+                    email
+            );
+            String response = useCase.execute();
+            ApiResponse apiResponse = new ApiResponse(true, response);
+            return ResponseEntity.ok(apiResponse);
+        } catch (EntityNotFoundException | MismatchException e) {
+            log.error("Unable to confirm forgotPassword: cause: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (Exception e) {
+            log.error("Unable to confirm forgotPassword reset code, cause: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error, please try again");
+        }
+    }
+
+    @PostMapping("change-password")
+    public ResponseEntity<?> changePassword(@RequestParam String email, @RequestParam String newPassword) {
+        try {
+            ForgotPasswordUseCase useCase = new ForgotPasswordUseCase(
+                    authRepository,
+                    passwordEncoder,
+                    email,
+                    newPassword
+            );
+            String response = useCase.execute();
+            ApiResponse apiResponse = new ApiResponse(true, response);
+            return ResponseEntity.ok(apiResponse);
+        } catch (EntityNotFoundException e) {
+            log.error("Unable to change new password: cause: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (Exception e) {
+            log.error("Unable to change new password, cause: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Server error, please try again");
         }
     }
 }
