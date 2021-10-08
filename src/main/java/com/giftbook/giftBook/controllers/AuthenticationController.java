@@ -1,10 +1,15 @@
 package com.giftbook.giftBook.controllers;
 
+import com.giftbook.giftBook.exceptions.EntityNotFoundException;
 import com.giftbook.giftBook.exceptions.RegisterException;
+import com.giftbook.giftBook.exceptions.UserLoginException;
 import com.giftbook.giftBook.repositories.UserAuthenticationRepository;
 import com.giftbook.giftBook.repositories.UserRepository;
+import com.giftbook.giftBook.requests.SignInRequest;
 import com.giftbook.giftBook.requests.SignUpRequest;
 import com.giftbook.giftBook.responses.ApiResponse;
+import com.giftbook.giftBook.responses.AuthenticationResponse;
+import com.giftbook.giftBook.usecases.SignInUseCase;
 import com.giftbook.giftBook.usecases.SignUpUseCase;
 import com.giftbook.giftBook.util.JwtUtil;
 import org.slf4j.Logger;
@@ -63,6 +68,26 @@ public class AuthenticationController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
             log.error("Unable to register user, cause: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "server error, please try again");
+        }
+    }
+
+    @PostMapping("signIn")
+    public ResponseEntity<?> login(@RequestBody SignInRequest request) {
+        try {
+            SignInUseCase useCase = new SignInUseCase(
+                    authRepository,
+                    jwtUtil,
+                    authenticationManager,
+                    request
+            );
+            AuthenticationResponse response = useCase.execute(expiration);
+            return ResponseEntity.ok(response);
+        } catch (EntityNotFoundException | UserLoginException e) {
+            log.error("Unable to login, cause: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
+        } catch (Exception e) {
+            log.error("Unable to login, cause: {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "server error, please try again");
         }
     }
