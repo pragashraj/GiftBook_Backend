@@ -18,6 +18,7 @@ public class CreateNewPaymentUseCase {
     private final MerchantRepository merchantRepository;
     private final ItemRepository itemRepository;
     private final PaymentCardRepository paymentCardRepository;
+    private final VoucherRepository voucherRepository;
     private final CreateNewPaymentRequest request;
 
     public CreateNewPaymentUseCase(PaymentRepository paymentRepository,
@@ -26,6 +27,7 @@ public class CreateNewPaymentUseCase {
                                    MerchantRepository merchantRepository,
                                    ItemRepository itemRepository,
                                    PaymentCardRepository paymentCardRepository,
+                                   VoucherRepository voucherRepository,
                                    CreateNewPaymentRequest request
     ) {
         this.paymentRepository = paymentRepository;
@@ -34,6 +36,7 @@ public class CreateNewPaymentUseCase {
         this.merchantRepository = merchantRepository;
         this.itemRepository = itemRepository;
         this.paymentCardRepository = paymentCardRepository;
+        this.voucherRepository = voucherRepository;
         this.request = request;
     }
 
@@ -83,6 +86,18 @@ public class CreateNewPaymentUseCase {
                 .build();
 
         paymentRepository.save(payment);
+
+        Voucher voucher = Voucher
+                .builder()
+                .createdAt(LocalDateTime.now())
+                .value(request.getValue())
+                .status("Active")
+                .description("")
+                .payment(payment)
+                .user(user)
+                .build();
+
+        voucherRepository.save(voucher);
 
         return "New payment made successfully";
     }

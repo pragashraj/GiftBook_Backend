@@ -37,7 +37,7 @@ public class GetPaymentsUseCase {
             throw new EntityNotFoundException("User not found");
         }
 
-        Page<Payment> paymentPage = paymentRepository.findAllByUser(user, PageRequest.of(page, 10));
+        Page<Payment> paymentPage = paymentRepository.findAllByUserOrderByPaymentAt(user, PageRequest.of(page, 10));
 
         return new PageableCorePayment(
                 paymentPage.get()

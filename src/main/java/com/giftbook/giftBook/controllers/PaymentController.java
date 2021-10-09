@@ -30,6 +30,7 @@ public class PaymentController {
     private final MerchantRepository merchantRepository;
     private final ItemRepository itemRepository;
     private final PaymentCardRepository paymentCardRepository;
+    private final VoucherRepository voucherRepository;
 
     @Autowired
     public PaymentController(PaymentRepository paymentRepository,
@@ -37,7 +38,8 @@ public class PaymentController {
                              ReceiverRepository receiverRepository,
                              MerchantRepository merchantRepository,
                              ItemRepository itemRepository,
-                             PaymentCardRepository paymentCardRepository
+                             PaymentCardRepository paymentCardRepository,
+                             VoucherRepository voucherRepository
     ) {
         this.paymentRepository = paymentRepository;
         this.userRepository = userRepository;
@@ -45,6 +47,7 @@ public class PaymentController {
         this.merchantRepository = merchantRepository;
         this.itemRepository = itemRepository;
         this.paymentCardRepository = paymentCardRepository;
+        this.voucherRepository = voucherRepository;
     }
 
     @GetMapping("getPayments/{page}")
@@ -78,6 +81,7 @@ public class PaymentController {
                     merchantRepository,
                     itemRepository,
                     paymentCardRepository,
+                    voucherRepository,
                     request
             );
             String response = useCase.execute();
@@ -110,10 +114,10 @@ public class PaymentController {
             PageableCorePayment pageableCorePayment = useCase.execute();
             return ResponseEntity.ok(pageableCorePayment);
         } catch (EntityNotFoundException e) {
-            log.error("Unable to filter payment by date, cause: {}", e.getMessage());
+            log.error("Unable to filter payments by date, cause: {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid props passed");
         } catch (Exception e) {
-            log.error("Unable to filter payment by date, cause: {}", e.getMessage());
+            log.error("Unable to filter payments by date, cause: {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "server error, please try again");
         }
     }
