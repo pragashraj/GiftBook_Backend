@@ -12,4 +12,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     Page<Item> findAllByMerchant(Merchant merchant, Pageable pageable);
 
     Page<Item> findAllByMerchantAndName(Merchant merchant, String name, Pageable pageable);
+
+    Item findByName(String name);
 }

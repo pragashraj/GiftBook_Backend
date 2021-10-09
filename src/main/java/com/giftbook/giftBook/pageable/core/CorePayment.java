@@ -1,42 +1,24 @@
-package com.giftbook.giftBook.entities;
+package com.giftbook.giftBook.pageable.core;
 
+import com.giftbook.giftBook.entities.PaymentCard;
+import com.giftbook.giftBook.entities.Receiver;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Entity
 @Data
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
-public class Payment {
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+@NoArgsConstructor
+public class CorePayment {
     private Long id;
-
     private LocalDateTime paymentAt;
-
     private BigDecimal value;
-
     private String senderType;
-
-    @OneToOne
+    private String merchantName;
+    private String itemName;
     private Receiver receiver;
-
-    @OneToOne
     private PaymentCard paymentCard;
-
-    @OneToOne
-    private Merchant merchant;
-
-    @OneToOne
-    private Item item;
-
-    @ManyToOne
-    private User user;
 }
