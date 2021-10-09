@@ -7,6 +7,7 @@ import com.giftbook.giftBook.repositories.*;
 import com.giftbook.giftBook.requests.CreateNewPaymentRequest;
 import com.giftbook.giftBook.responses.ApiResponse;
 import com.giftbook.giftBook.usecases.CreateNewPaymentUseCase;
+import com.giftbook.giftBook.usecases.FilterPaymentsByDateUseCase;
 import com.giftbook.giftBook.usecases.GetPaymentsUseCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,6 +88,32 @@ public class PaymentController {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         } catch (Exception e) {
             log.error("Unable to create new payment, cause: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "server error, please try again");
+        }
+    }
+
+    @GetMapping("filterPaymentsByDate")
+    public ResponseEntity<?> filterPaymentsByDate(@RequestParam String start, @RequestParam String end,
+                                                  @RequestParam int page, Authentication authentication
+    ) {
+        try {
+            UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+            FilterPaymentsByDateUseCase useCase = new FilterPaymentsByDateUseCase(
+                    paymentRepository,
+                    userRepository,
+                    start,
+                    end,
+                    userDetails.getUsername(),
+                    page
+            );
+
+            PageableCorePayment pageableCorePayment = useCase.execute();
+            return ResponseEntity.ok(pageableCorePayment);
+        } catch (EntityNotFoundException e) {
+            log.error("Unable to filter payment by date, cause: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid props passed");
+        } catch (Exception e) {
+            log.error("Unable to filter payment by date, cause: {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "server error, please try again");
         }
     }
