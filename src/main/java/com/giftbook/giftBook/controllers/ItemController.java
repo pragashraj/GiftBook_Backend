@@ -3,6 +3,7 @@ package com.giftbook.giftBook.controllers;
 import com.giftbook.giftBook.pageable.pageableEntities.PageableCoreItem;
 import com.giftbook.giftBook.repositories.ItemRepository;
 import com.giftbook.giftBook.repositories.MerchantRepository;
+import com.giftbook.giftBook.usecases.GetItemByNameAndMerchantUseCase;
 import com.giftbook.giftBook.usecases.GetItemsByMerchantUseCase;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +41,24 @@ public class ItemController {
             return ResponseEntity.ok(pageableCoreItem);
         } catch (Exception e) {
             log.error("Unable to get items, cause: {}", e.getMessage());
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "server error, please try again");
+        }
+    }
+
+    @GetMapping("getItemByName")
+    public ResponseEntity<?> getItemByName(@RequestParam String name, @RequestParam String merchant, @RequestParam int page) {
+        try {
+            GetItemByNameAndMerchantUseCase useCase = new GetItemByNameAndMerchantUseCase(
+                    itemRepository,
+                    merchantRepository,
+                    name,
+                    merchant,
+                    page
+            );
+            PageableCoreItem pageableCoreItem = useCase.execute();
+            return ResponseEntity.ok(pageableCoreItem);
+        } catch (Exception e) {
+            log.error("Unable to get items by name and merchant, cause: {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "server error, please try again");
         }
     }
