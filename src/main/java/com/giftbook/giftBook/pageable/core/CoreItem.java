@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class CoreItem {
     private Long id;
-    private String name;
+    private String title;
     private BigDecimal price;
     private String description;
     private Merchant merchant;

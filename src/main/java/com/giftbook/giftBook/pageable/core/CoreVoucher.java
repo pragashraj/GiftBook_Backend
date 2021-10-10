@@ -17,5 +17,6 @@ public class CoreVoucher {
     private String owner;
     private String status;
     private String description;
-    private Long paymentId;
+    private String merchantName;
+    private String itemName;
 }

@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 public class AuthenticationResponse {
     private String email;
     private String name;
-    private String jwt;
+    private String token;
     private int expiration;
 }

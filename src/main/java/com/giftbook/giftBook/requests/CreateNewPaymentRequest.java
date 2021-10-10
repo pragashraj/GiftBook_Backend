@@ -18,4 +18,7 @@ public class CreateNewPaymentRequest {
     private String receiverName;
     private String receiverAddress;
     private String receiverDistrict;
+    private String senderName;
+    private String senderAddress;
+    private String senderContact;
 }

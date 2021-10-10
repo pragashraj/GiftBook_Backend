@@ -65,7 +65,8 @@ public class FilterVouchersByStatusUseCase {
                 voucher.getOwner(),
                 voucher.getStatus(),
                 voucher.getDescription(),
-                voucher.getPayment().getId()
+                voucher.getPayment().getMerchant().getName(),
+                voucher.getPayment().getItem().getName()
         );
     }
 }

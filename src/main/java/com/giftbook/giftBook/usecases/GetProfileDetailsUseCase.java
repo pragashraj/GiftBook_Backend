@@ -36,6 +36,7 @@ public class GetProfileDetailsUseCase {
                 .name(user.getFullName())
                 .address(user.getAddress())
                 .contact(user.getContact())
+                .district(user.getDistrict())
                 .build();
 
         PaymentCard paymentCard = paymentCardRepository.findByUser(user);

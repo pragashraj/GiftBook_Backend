@@ -31,6 +31,7 @@ public class PaymentController {
     private final ItemRepository itemRepository;
     private final PaymentCardRepository paymentCardRepository;
     private final VoucherRepository voucherRepository;
+    private final SenderRepository senderRepository;
 
     @Autowired
     public PaymentController(PaymentRepository paymentRepository,
@@ -39,7 +40,8 @@ public class PaymentController {
                              MerchantRepository merchantRepository,
                              ItemRepository itemRepository,
                              PaymentCardRepository paymentCardRepository,
-                             VoucherRepository voucherRepository
+                             VoucherRepository voucherRepository,
+                             SenderRepository senderRepository
     ) {
         this.paymentRepository = paymentRepository;
         this.userRepository = userRepository;
@@ -48,6 +50,7 @@ public class PaymentController {
         this.itemRepository = itemRepository;
         this.paymentCardRepository = paymentCardRepository;
         this.voucherRepository = voucherRepository;
+        this.senderRepository = senderRepository;
     }
 
     @GetMapping("getPayments/{page}")
@@ -82,6 +85,7 @@ public class PaymentController {
                     itemRepository,
                     paymentCardRepository,
                     voucherRepository,
+                    senderRepository,
                     request
             );
             String response = useCase.execute();

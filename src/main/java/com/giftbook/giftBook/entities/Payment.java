@@ -29,6 +29,9 @@ public class Payment {
     private Receiver receiver;
 
     @OneToOne
+    private Sender sender;
+
+    @OneToOne
     private PaymentCard paymentCard;
 
     @OneToOne

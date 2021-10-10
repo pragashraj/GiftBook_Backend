@@ -19,6 +19,7 @@ public class CreateNewPaymentUseCase {
     private final ItemRepository itemRepository;
     private final PaymentCardRepository paymentCardRepository;
     private final VoucherRepository voucherRepository;
+    private final SenderRepository senderRepository;
     private final CreateNewPaymentRequest request;
 
     public CreateNewPaymentUseCase(PaymentRepository paymentRepository,
@@ -28,6 +29,7 @@ public class CreateNewPaymentUseCase {
                                    ItemRepository itemRepository,
                                    PaymentCardRepository paymentCardRepository,
                                    VoucherRepository voucherRepository,
+                                   SenderRepository senderRepository,
                                    CreateNewPaymentRequest request
     ) {
         this.paymentRepository = paymentRepository;
@@ -37,6 +39,7 @@ public class CreateNewPaymentUseCase {
         this.itemRepository = itemRepository;
         this.paymentCardRepository = paymentCardRepository;
         this.voucherRepository = voucherRepository;
+        this.senderRepository = senderRepository;
         this.request = request;
     }
 
@@ -62,14 +65,14 @@ public class CreateNewPaymentUseCase {
             throw new EntityNotFoundException("Item not found");
         }
 
-        Receiver receiver = Receiver
-                .builder()
-                .name(request.getReceiverName())
-                .address(request.getReceiverAddress())
-                .district(request.getReceiverDistrict())
-                .build();
-
+        Receiver receiver = createReceiver();
         receiverRepository.save(receiver);
+
+        Sender sender = null;
+        if (request.getSenderType().equals("Own")) {
+            sender = createSender();
+            senderRepository.save(sender);
+        }
 
         PaymentCard paymentCard = paymentCardRepository.findByUser(user);
 
@@ -79,15 +82,40 @@ public class CreateNewPaymentUseCase {
                 .value(request.getValue())
                 .senderType(request.getSenderType())
                 .receiver(receiver)
+                .sender(sender)
                 .paymentCard(paymentCard)
                 .merchant(merchant)
                 .item(item)
                 .user(user)
                 .build();
-
         paymentRepository.save(payment);
 
-        Voucher voucher = Voucher
+        Voucher voucher = createVoucher(payment, user);
+        voucherRepository.save(voucher);
+
+        return "New payment made successfully";
+    }
+
+    private Receiver createReceiver() {
+        return Receiver
+                .builder()
+                .name(request.getReceiverName())
+                .address(request.getReceiverAddress())
+                .district(request.getReceiverDistrict())
+                .build();
+    }
+
+    private Sender createSender() {
+        return Sender
+                .builder()
+                .name(request.getSenderName())
+                .address(request.getSenderAddress())
+                .contact(request.getSenderContact())
+                .build();
+    }
+
+    private Voucher createVoucher(Payment payment, User user) {
+        return Voucher
                 .builder()
                 .createdAt(LocalDateTime.now())
                 .value(request.getValue())
@@ -96,9 +124,5 @@ public class CreateNewPaymentUseCase {
                 .payment(payment)
                 .user(user)
                 .build();
-
-        voucherRepository.save(voucher);
-
-        return "New payment made successfully";
     }
 }
