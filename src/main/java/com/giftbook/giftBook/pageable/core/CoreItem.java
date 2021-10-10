@@ -16,4 +16,5 @@ public class CoreItem {
     private BigDecimal price;
     private String description;
     private Merchant merchant;
+    private byte[] src;
 }

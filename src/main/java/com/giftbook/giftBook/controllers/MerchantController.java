@@ -1,6 +1,7 @@
 package com.giftbook.giftBook.controllers;
 
 import com.giftbook.giftBook.exceptions.EntityNotFoundException;
+import com.giftbook.giftBook.exceptions.FileStorageException;
 import com.giftbook.giftBook.pageable.pageableEntities.PageableCoreMerchant;
 import com.giftbook.giftBook.repositories.MerchantCategoryRepository;
 import com.giftbook.giftBook.repositories.MerchantRepository;
@@ -87,7 +88,7 @@ public class MerchantController {
         try {
             GetMerchantCategoriesUseCase useCase = new GetMerchantCategoriesUseCase(merchantCategoryRepository);
             return ResponseEntity.ok(useCase.execute());
-        } catch (Exception e) {
+        } catch (Exception | FileStorageException e) {
             log.error("Unable to get merchant categories, cause: {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "server error, please try again");
         }

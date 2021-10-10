@@ -1,12 +1,16 @@
 package com.giftbook.giftBook.usecases;
 
 import com.giftbook.giftBook.entities.Merchant;
+import com.giftbook.giftBook.exceptions.FileStorageException;
 import com.giftbook.giftBook.pageable.core.CoreMerchant;
 import com.giftbook.giftBook.pageable.pageableEntities.PageableCoreMerchant;
 import com.giftbook.giftBook.repositories.MerchantRepository;
+import com.giftbook.giftBook.util.FileStorageService;
+import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.io.IOException;
 import java.util.stream.Collectors;
 
 public class GetMerchantsUseCase {
@@ -36,7 +40,17 @@ public class GetMerchantsUseCase {
                 merchant.getName(),
                 merchant.getLocation(),
                 merchant.getDescription(),
-                merchant.getMerchantCategory()
+                merchant.getMerchantCategory(),
+                getImage(merchant.getFileName())
         );
+    }
+
+    @SneakyThrows
+    private byte[] getImage(String fileName) {
+        if (fileName != null) {
+            FileStorageService fileStorageService = new FileStorageService("Merchants");
+            return fileStorageService.convert(fileName);
+        }
+        return null;
     }
 }

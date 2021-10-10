@@ -21,4 +21,6 @@ public class MerchantCategory {
     private Long id;
 
     private String title;
+
+    private String fileName;
 }

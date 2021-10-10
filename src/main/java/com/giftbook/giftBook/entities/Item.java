@@ -24,6 +24,8 @@ public class Item {
 
     private String description;
 
+    private String fileName;
+
     @OneToOne
     private Merchant merchant;
 }

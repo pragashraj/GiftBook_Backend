@@ -21,6 +21,8 @@ public class Merchant {
 
     private String location;
 
+    private String fileName;
+
     @Lob
     private String description;
 

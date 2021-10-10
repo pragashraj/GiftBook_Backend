@@ -14,4 +14,5 @@ public class CoreMerchant {
     private String location;
     private String description;
     private MerchantCategory merchantCategory;
+    private byte[] src;
 }

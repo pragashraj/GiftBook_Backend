@@ -6,6 +6,8 @@ import com.giftbook.giftBook.pageable.core.CoreItem;
 import com.giftbook.giftBook.pageable.pageableEntities.PageableCoreItem;
 import com.giftbook.giftBook.repositories.ItemRepository;
 import com.giftbook.giftBook.repositories.MerchantRepository;
+import com.giftbook.giftBook.util.FileStorageService;
+import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
@@ -43,7 +45,17 @@ public class GetItemsByMerchantUseCase {
                 item.getName(),
                 item.getPrice(),
                 item.getDescription(),
-                item.getMerchant()
+                item.getMerchant(),
+                getImage(item.getFileName())
         );
+    }
+
+    @SneakyThrows
+    private byte[] getImage(String fileName) {
+        if (fileName != null) {
+            FileStorageService fileStorageService = new FileStorageService("Items");
+            return fileStorageService.convert(fileName);
+        }
+        return null;
     }
 }
