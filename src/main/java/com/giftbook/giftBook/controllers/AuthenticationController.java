@@ -1,15 +1,14 @@
 package com.giftbook.giftBook.controllers;
 
-import com.giftbook.giftBook.exceptions.EntityNotFoundException;
-import com.giftbook.giftBook.exceptions.MismatchException;
-import com.giftbook.giftBook.exceptions.RegisterException;
-import com.giftbook.giftBook.exceptions.UserLoginException;
+import com.giftbook.giftBook.exceptions.*;
 import com.giftbook.giftBook.repositories.UserAuthenticationRepository;
 import com.giftbook.giftBook.repositories.UserRepository;
 import com.giftbook.giftBook.requests.SignInRequest;
 import com.giftbook.giftBook.requests.SignUpRequest;
 import com.giftbook.giftBook.responses.ApiResponse;
 import com.giftbook.giftBook.responses.AuthenticationResponse;
+import com.giftbook.giftBook.transport.EmailService;
+import com.giftbook.giftBook.transport.templates.ForgotPasswordTemplate;
 import com.giftbook.giftBook.usecases.*;
 import com.giftbook.giftBook.util.JwtUtil;
 import org.slf4j.Logger;
@@ -34,6 +33,8 @@ public class AuthenticationController {
     private final JwtUtil jwtUtil;
     private final UserAuthenticationRepository authRepository;
     private final UserRepository userRepository;
+    private final ForgotPasswordTemplate forgotPasswordTemplate;
+    private final EmailService emailService;
 
     @Value("${app.jwt.expiration}")
     private int expiration;
@@ -43,12 +44,17 @@ public class AuthenticationController {
                                     PasswordEncoder passwordEncoder,
                                     JwtUtil jwtUtil,
                                     UserAuthenticationRepository authRepository,
-                                    UserRepository userRepository) {
+                                    UserRepository userRepository,
+                                    ForgotPasswordTemplate forgotPasswordTemplate,
+                                    EmailService emailService
+    ) {
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
         this.authRepository = authRepository;
         this.userRepository = userRepository;
+        this.forgotPasswordTemplate = forgotPasswordTemplate;
+        this.emailService = emailService;
     }
 
     @PostMapping("sign-up")
@@ -97,6 +103,8 @@ public class AuthenticationController {
         try {
             SendPasswordResetCodeUseCase useCase = new SendPasswordResetCodeUseCase(
                     authRepository,
+                    forgotPasswordTemplate,
+                    emailService,
                     email
             );
             String response = useCase.execute();
@@ -105,7 +113,7 @@ public class AuthenticationController {
         } catch (EntityNotFoundException e) {
             log.error("Unable to send forgotPassword reset code, cause: {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        } catch (Exception e) {
+        } catch (Exception | DispatcherException | ContentCreationException e) {
             log.error("Unable to send forgotPassword reset code, cause : {}", e.getMessage());
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "server error, please try again");
         }
