@@ -79,7 +79,6 @@ public class FilterPaymentsByDateUseCase {
     }
 
     private LocalDateTime parseDate(String date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return LocalDateTime.parse(date, formatter);
+        return LocalDateTime.parse(date);
     }
 }
