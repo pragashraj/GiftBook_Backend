@@ -17,4 +17,7 @@ public class GetProfileResponse {
     private String contact;
     private String cardType;
     private String cardNo;
+    private int noOfVouchers;
+    private int noOfActiveVouchers;
+    private int noOfExpiredVouchers;
 }

@@ -6,6 +6,7 @@ import com.giftbook.giftBook.exceptions.MismatchException;
 import com.giftbook.giftBook.repositories.PaymentCardRepository;
 import com.giftbook.giftBook.repositories.UserAuthenticationRepository;
 import com.giftbook.giftBook.repositories.UserRepository;
+import com.giftbook.giftBook.repositories.VoucherRepository;
 import com.giftbook.giftBook.requests.ChangeNewPasswordRequest;
 import com.giftbook.giftBook.requests.UpdatePaymentCardRequest;
 import com.giftbook.giftBook.requests.UpdateProfileRequest;
@@ -34,17 +35,20 @@ public class UserController {
     private final UserRepository userRepository;
     private final PaymentCardRepository paymentCardRepository;
     private final UserAuthenticationRepository authRepository;
+    private final VoucherRepository voucherRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserController(UserRepository userRepository,
                           PaymentCardRepository paymentCardRepository,
                           UserAuthenticationRepository authRepository,
+                          VoucherRepository voucherRepository,
                           PasswordEncoder passwordEncoder
     ) {
         this.userRepository = userRepository;
         this.paymentCardRepository = paymentCardRepository;
         this.authRepository = authRepository;
+        this.voucherRepository = voucherRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -54,6 +58,7 @@ public class UserController {
             GetProfileDetailsUseCase useCase = new GetProfileDetailsUseCase(
                     userRepository,
                     paymentCardRepository,
+                    voucherRepository,
                     email
             );
             GetProfileResponse response = useCase.execute();
