@@ -50,6 +50,8 @@ public class SignInUseCase {
                 );
                 SecurityContextHolder.getContext().setAuthentication(authentication);
                 String jwt = jwtUtil.generate(authentication);
+                userAuthentication.setLoginAttempts(0);
+                authRepository.save(userAuthentication);
                 return new AuthenticationResponse(
                         request.getEmail(),
                         userAuthentication.getUser().getFullName(),

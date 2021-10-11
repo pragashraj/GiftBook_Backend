@@ -7,6 +7,7 @@ import com.giftbook.giftBook.requests.CreateNewPaymentRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class CreateNewPaymentUseCase {
@@ -21,6 +22,9 @@ public class CreateNewPaymentUseCase {
     private final VoucherRepository voucherRepository;
     private final SenderRepository senderRepository;
     private final CreateNewPaymentRequest request;
+
+    private final BigDecimal deliveryCharge = BigDecimal.valueOf(100);
+    private final BigDecimal platformCharge = BigDecimal.valueOf(50);
 
     public CreateNewPaymentUseCase(PaymentRepository paymentRepository,
                                    UserRepository userRepository,
@@ -76,10 +80,12 @@ public class CreateNewPaymentUseCase {
 
         PaymentCard paymentCard = paymentCardRepository.findByUser(user);
 
+        BigDecimal total = request.getValue().add(deliveryCharge).add(platformCharge);
+
         Payment payment = Payment
                 .builder()
                 .paymentAt(LocalDateTime.now())
-                .value(request.getValue())
+                .value(total)
                 .senderType(request.getSenderType())
                 .receiver(receiver)
                 .sender(sender)
@@ -90,7 +96,7 @@ public class CreateNewPaymentUseCase {
                 .build();
         paymentRepository.save(payment);
 
-        Voucher voucher = createVoucher(payment, user);
+        Voucher voucher = createVoucher(payment, user, total);
         voucherRepository.save(voucher);
 
         return "New payment made successfully";
@@ -114,11 +120,11 @@ public class CreateNewPaymentUseCase {
                 .build();
     }
 
-    private Voucher createVoucher(Payment payment, User user) {
+    private Voucher createVoucher(Payment payment, User user, BigDecimal total) {
         return Voucher
                 .builder()
                 .createdAt(LocalDateTime.now())
-                .value(request.getValue())
+                .value(total)
                 .status("Active")
                 .description("Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.")
                 .payment(payment)

@@ -13,7 +13,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 
 public class FilterVouchersByDateUseCase {
@@ -76,7 +75,6 @@ public class FilterVouchersByDateUseCase {
     }
 
     private LocalDateTime parseDate(String date) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return LocalDateTime.parse(date, formatter);
+        return LocalDateTime.parse(date);
     }
 }
